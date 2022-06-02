@@ -4,14 +4,97 @@
     
     <meta charset="UTF-8">
     <!-- https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP -->
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'">
+    <!-- <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'"> -->
     <title>Hello World!</title>
+    <script
+		src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v1.9.8/dist/alpine.js"
+		defer
+	></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.1.3/dist/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
   </head>
   <body>
-    <h1>Hello World!</h1>
-    We are using Node.js <span id="node-version"></span>,
-    Chromium <span id="chrome-version"></span>,
-    and Electron <span id="electron-version"></span>.
-    <button id="run">click</button>
+    <div id="all-table">
+
+    </div>
+  
+    <button class="btn btn-success" id="sbt-button">Submit Data</button>
+
+  <script >
+  const {ipcRenderer} = require('electron')
+  ipcRenderer.on('item',(event,docs)=>{
+    console.log(docs)
+    console.log("received")
+    docs.forEach(element => {
+      console.log('eleement',element)
+        createTable(element)
+        
+    });
+
+  })
+  
+
+  // Alpine Table Script 
+  function createTable(obj){
+    let ele = document.getElementById("all-table")
+    let table = document.createElement("table")
+    let thead = document.createElement("thead") 
+    let tr = document.createElement("tr")
+    let th = document.createElement("th")
+    let checkbox = document.createElement("th")
+    ele.append(table)
+    table.append(thead)
+    thead.append(tr)
+    tr.append(th)
+    tr.append(checkbox)
+    th.innerText=obj.id;
+    checkbox.innerHTML= `<input type="radio" id=${obj.id} name="selected-field" value=${obj.id}>`
+
+  let body = document.createElement('tbody');
+  let bodytr= document.createElement('tr');
+    table.append(body);
+    body.append(bodytr)
+
+    createTableTD(obj.data,bodytr,obj.id)
+
+  }
+function createTableTD(value,bodytr,id){
+  console.log('value001',value)
+  Object.entries(value).forEach((item)=>{
+    const [key, value] = item;
+    let tr = document.createElement('tr')
+    let td = document.createElement('td')
+    td.innerText = value;
+    td.setAttribute("id",id)
+    tr.append(td)
+    bodytr.append(tr)
+  })
+
+}
+
+let sbtbtn = document.getElementById("sbt-button");
+sbtbtn.addEventListener("click",()=>{
+  let isSelection =document.querySelector('input[name="selected-field"]:checked').value;
+  if(isSelection){
+    let data = document.querySelectorAll(`td[id=${isSelection}]`)
+    let arr = Array.from(data)
+    let sendData=[]
+    arr.forEach((item)=>{
+      sendData.push(item.innerHTML)
+    })
+    console.log(sendData)
+  }
+})
+
+  
+  </script>
+
+<!-- Bootstrap Scripts -->
+
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.3/dist/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.1.3/dist/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+
+
   </body>
 </html>
+

@@ -1,26 +1,48 @@
-const { app, BrowserWindow } = require('electron')
-const {connectFirebase,db} = require('./Firebase_connection') 
+const { ipcRenderer,app, BrowserWindow,ipcMain } = require('electron')
+const {connectFirebase} = require('./Firebase_connection') 
+const { getFirestore} = require('firebase-admin/firestore');
 const path = require('path')
+let win;
+let db;
+let coll=[];
 const createWindow = () => {
-    const win = new BrowserWindow({
+     win = new BrowserWindow({
       width: 800,
       height: 600,
       webPreferences: {
-        preload: path.join(__dirname, 'preload.js')
+        preload: path.join(__dirname, 'preload.js'),
+        contextIsolation:false,
+        nodeIntegration:true
       }
     })
-    
     win.loadFile('index.html')
   }
   app.whenReady().then(() => {
     connectFirebase() 
     createWindow()
+    db = getFirestore();
+    db.collection('SessionRecipes').get().then((docs)=>{
+      docs.forEach((doc) => {
+            coll.push({id:doc.id,data:doc.data()})
+      })
+      win.webContents.send('item',coll)
+    })
+
+    // ipcMain.on('item',function(e,item){
+    //   win.webContents.send('item',item)
+    // })
+    
     
     app.on('activate', () => {
       if (BrowserWindow.getAllWindows().length === 0) createWindow()
 
     })
+
+    
+
   })
   app.on('window-all-closed', () => {
     if (process.platform !== 'darwin') app.quit()
   })
+
+  
