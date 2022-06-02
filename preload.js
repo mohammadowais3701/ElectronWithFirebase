@@ -1,6 +1,7 @@
 const {Builder, Browser, By, Key, until} = require('selenium-webdriver');
 let website="https://brandontest.activehosted.com";//take by user
-async function run() {
+async function run(website,email,password,urls) {
+  alert(website)
   let driver = await new Builder().forBrowser(Browser.CHROME).build();
   try {
     await driver.get(website);
@@ -26,22 +27,11 @@ async function run() {
   } 
   catch(err){
    alert(err);
+   await driver.quit();
   }
   finally {
-    await driver.quit();
+
   }
 };
 
-
-window.addEventListener('DOMContentLoaded', () => {
-    let btn=document.getElementById("run");
-    btn.addEventListener('click',()=>{run()})
-    const replaceText = (selector, text) => {
-      const element = document.getElementById(selector)
-      if (element) element.innerText = text
-    }
-  
-    for (const dependency of ['chrome', 'node', 'electron']) {
-      replaceText(`${dependency}-version`, process.versions[dependency])
-    }
-  })
+  module.exports={run}

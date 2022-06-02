@@ -13,6 +13,23 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.1.3/dist/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
   </head>
   <body>
+
+    <div class=" container form-group">
+      <form>
+  
+      
+      <div class="d-flex">
+          <input class="form-control m-2" id="website" placeholder="Website"> 
+      </div>
+      <div  class="d-flex">
+          <input class="form-control m-2" id="email" placeholder="Email"> 
+      </div>
+      <div  class="d-flex">
+         <input class="form-control m-2" id="password" placeholder="Password"> 
+      </div>
+  
+  </form>
+  </div>
     <div id="all-table">
 
     </div>
@@ -21,6 +38,7 @@
 
   <script >
   const {ipcRenderer} = require('electron')
+  const {run}=require('./preload')
   ipcRenderer.on('item',(event,docs)=>{
     console.log(docs)
     console.log("received")
@@ -70,22 +88,30 @@ function createTableTD(value,bodytr,id){
   })
 
 }
-
+let urls=[]
+let website,email,password;
 let sbtbtn = document.getElementById("sbt-button");
 sbtbtn.addEventListener("click",()=>{
+
   let isSelection =document.querySelector('input[name="selected-field"]:checked').value;
-  if(isSelection){
-    let data = document.querySelectorAll(`td[id=${isSelection}]`)
+  if(isSelection)
+  {
+    website=document.getElementById("website").value;
+    email=document.getElementById("email").value;
+    password=document.getElementById("password").value;
+   let data = document.querySelectorAll(`td[id=${isSelection}]`)
     let arr = Array.from(data)
-    let sendData=[]
+    
     arr.forEach((item)=>{
-      sendData.push(item.innerHTML)
+      urls.push(item.innerHTML)
     })
-    console.log(sendData)
+    run(website,email,password,urls)
+    // console.log({urls})
+
   }
 })
 
-  
+  module.export={urls,website,email,password}
   </script>
 
 <!-- Bootstrap Scripts -->
